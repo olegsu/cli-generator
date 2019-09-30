@@ -24,6 +24,15 @@ func (g *Generate) Handle(cnf *viper.Viper) error {
 
 	log := logger.New(nil)
 
+	calculateSha := cnf.GetBool("calculateSha")
+	projectDir := cnf.GetString("projectDir")
+	lang := cnf.GetString("language")
+
+	sha := shaCalculator{
+		path:    fmt.Sprintf("%s/.cli-generator.sha", projectDir),
+		content: bytes.NewBuffer(nil),
+	}
+
 	var err error
 	var s *spec.CLISpec
 	var specJSON map[string]interface{}
@@ -36,17 +45,14 @@ func (g *Generate) Handle(cnf *viper.Viper) error {
 		return err
 	}
 
-	lang := cnf.GetString("language")
-
-	log.Debug("Running engine", "lang", lang)
-	// root cmd
+	log.Debug("Running template engine", "lang", lang)
 	var res []*language.RenderResult
 	var renderError error
 	engine := language.New(&language.Options{
 		Type:             lang,
 		Spec:             s,
 		Logger:           log.New("type", lang),
-		ProjectDirectory: cnf.GetString("projectDir"),
+		ProjectDirectory: projectDir,
 		GenerateHandlers: cnf.GetBool("createHandlers"),
 	})
 	key, store := engine.BuildData(cnf)
@@ -69,10 +75,25 @@ func (g *Generate) Handle(cnf *viper.Viper) error {
 		if err != nil {
 			log.Error(renderError.Error())
 		}
-		if err := writeFile(r.Content, file); err != nil {
+		if err := write(r.Content, file); err != nil {
 			log.Error(renderError.Error())
 		}
+		if calculateSha {
+			sha.append(r.Content)
+		}
 		log.Debug("File created", "name", r.File)
+	}
+
+	if calculateSha {
+		data := sha.calc()
+		file, err := os.Create(sha.path)
+		if err != nil {
+			log.Error("Failed to create .cli-generator.sha file")
+			return err
+		}
+		if err = write(data, file); err != nil {
+			log.Error("Failed to write to .cli-generator.sha file")
+		}
 	}
 
 	return nil
@@ -91,7 +112,7 @@ func getCliSpec(path string, readFromFile func(path string) ([]byte, error)) (*s
 	return &spec, nil
 }
 
-func writeFile(content *bytes.Buffer, writer io.Writer) error {
+func write(content *bytes.Buffer, writer io.Writer) error {
 	_, err := fmt.Fprintf(writer, "%s", content.String())
 	if err != nil {
 		return err

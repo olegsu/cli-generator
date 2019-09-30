@@ -11,6 +11,7 @@ var generateCmdOptions struct {
 	goPackage      string
 	spec           string
 	createHandlers bool
+	calculateSha   bool
 }
 
 var generateCmd = &cobra.Command{
@@ -23,6 +24,7 @@ var generateCmd = &cobra.Command{
 		cnf.Set("spec", generateCmdOptions.spec)
 		cnf.Set("projectDir", rootCmdOptions.ProjectDirectory)
 		cnf.Set("createHandlers", generateCmdOptions.createHandlers)
+		cnf.Set("calculateSha", generateCmdOptions.calculateSha)
 		return handler.Handle(cnf)
 	},
 }
@@ -32,5 +34,6 @@ func init() {
 	generateCmd.Flags().StringVar(&generateCmdOptions.goPackage, "go-package", "", "Package name of the golang CLI")
 	generateCmd.Flags().StringVar(&generateCmdOptions.spec, "spec", "", "Path to CLI.yaml file")
 	generateCmd.Flags().BoolVar(&generateCmdOptions.createHandlers, "create-handlers", false, "Create handlers if not exists")
+	generateCmd.Flags().BoolVar(&generateCmdOptions.calculateSha, "calculate-sha", false, "Calculate SHA of the commands and output it to file")
 	rootCmd.AddCommand(generateCmd)
 }
