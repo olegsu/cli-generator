@@ -1,0 +1,37 @@
+version: '1.0'
+
+steps:
+  main_clone:
+    type: git-clone
+    repo: olegsu/cli-generator
+    git: cf_github
+    revision: ${{CF_REVISION}}
+
+  version:
+    image: alpine
+    commands:
+    - cf_export VERSION=$(cat VERSION)    
+
+  git-tag:
+    title: Push tag to git
+    image: codefresh/cli
+    commands:
+    - git remote rm origin
+    - git remote add origin https://olegsu:${{GITHUB_TOKEN}}@github.com/olegsu/cli-generator.git
+    - git tag v${{VERSION}}
+    - git push --tags
+    fail_fast: false
+    when:
+      branch:
+        only:
+        - master
+
+  relase:
+    image: goreleaser/goreleaser:v0.117
+    fail_fast: false
+    commands:
+    - goreleaser release -f goreleaser.yaml --rm-dist --skip-validate
+    when:
+      branch:
+        only:
+        - master
