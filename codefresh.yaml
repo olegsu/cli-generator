@@ -35,3 +35,29 @@ steps:
       branch:
         only:
         - master
+
+  docker_build:
+    title: Building Docker Image
+    type: build
+    image_name: olsynt/cli-generator
+    tag: '${{CF_BRANCH_TAG_NORMALIZED}}'
+
+  push_version:
+    title: Pushing to Docker Registry
+    type: push
+    candidate: '${{docker_build}}'
+    tags:
+    - ${{CF_BRANCH_TAG_NORMALIZED}}
+    - ${{VERSION}}
+    registry: dockerhub
+    
+  push_latest:
+    title: Pushing to Docker Registry
+    type: push
+    candidate: '${{docker_build}}'
+    tag: latest
+    registry: dockerhub
+    when:
+      branch:
+        only:
+        - master
