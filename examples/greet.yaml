@@ -1,0 +1,22 @@
+metadata:
+  name: greet
+  description: Greet
+  version: 0.0.1
+  maintainers:
+    - Oleg Sucharevich
+flags:
+  - name: verbose
+    description: "Set to see more logs"
+    alias:
+      - v
+    default: false
+    envVar: "VERBOSE"
+    type: bool
+    required: true
+
+commands:
+- name: welcome
+  flags:
+    - name: name
+      type: string
+      envVar: USER

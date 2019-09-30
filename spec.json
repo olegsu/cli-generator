@@ -1,0 +1,116 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "definitions": {
+        "flag": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "bool",
+                        "number",
+                        "arrayBool",
+                        "arrayString",
+                        "arrayNumber"
+                    ]
+                },
+                "alias": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "default": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean",
+                    "default": false                    
+                },
+                "enum": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "envVar": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "required",
+                "type"
+            ]
+        },
+        "command": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "root": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/flag"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "root"
+            ]
+        }
+    },
+    "properties": {
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "CLI Name",
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "version"
+            ]
+        },
+        "commands": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/command"
+            }
+        },
+        "flags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/flag"
+            }
+        }
+    },
+    "required": [
+        "metadata"
+    ]
+}
