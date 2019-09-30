@@ -110,7 +110,17 @@ type (
 // Handle - the function that will be called from the CLI with viper config
 // to provide access to all flags
 func (g *Handler) Handle(cnf *viper.Viper) error {
-	fmt.Printf("Hello %s\n", cnf.GetString("name"))
+	fmt.Printf("Handler for command: {{ .cmd.name }}\n")
+	{{ range .cmd.flags }}
+	{{ if eq .type "arrayString" }}
+	data := cnf.{{ .type | golangFlagDefaultFunc }}("{{.name}}")
+	for index, d := range data {
+		fmt.Printf("flag name: {{ .name }}_%d, value: %s\n", index, d)
+	}
+	{{ else }}
+	fmt.Printf("flag name: {{ .name }}, value: %s\n", cnf.{{ .type | golangFlagDefaultFunc }}("{{.name}}"))
+	{{ end }}
+	{{ end }}
 	return nil
 }`
 )

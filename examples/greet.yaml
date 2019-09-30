@@ -20,3 +20,5 @@ commands:
     - name: name
       type: string
       envVar: USER
+    - name: array
+      type: arrayString
