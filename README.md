@@ -1,3 +1,6 @@
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/olegsu/cli-generator)](https://goreportcard.com/report/github.com/olegsu/cli-generator)
+
 # CLI-GENERATOR
 Generate CLI entrypoints from spec file
 Any feedback on the spec is welcome
