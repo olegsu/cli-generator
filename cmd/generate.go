@@ -18,7 +18,6 @@ var generateCmdOptions struct {
 	spec string
 	projectDir string
 	createHandlers bool
-	calculateSha bool
 	
 }
 
@@ -29,7 +28,9 @@ var generateCmd = &cobra.Command{
 		return h.Handle(cnf)
 	},
 	Long: "Generate CLI entrypoints from spec file",
+	
 	PreRun: func(cmd *cobra.Command, args []string) {
+	
 		
 		cnf.Set("language", generateCmdOptions.language)
 		
@@ -41,8 +42,6 @@ var generateCmd = &cobra.Command{
 		
 		cnf.Set("createHandlers", generateCmdOptions.createHandlers)
 		
-		cnf.Set("calculateSha", generateCmdOptions.calculateSha)
-		
 	},
 }
 
@@ -51,16 +50,14 @@ var generateCmd = &cobra.Command{
 
 func init() {
 
-	generateCmd.Flags().StringVar(&generateCmdOptions.language, "language", cnf.GetString("language"), "")
+	generateCmd.PersistentFlags().StringVar(&generateCmdOptions.language, "language", cnf.GetString("language"), "")
 
-	generateCmd.Flags().StringVar(&generateCmdOptions.goPackage, "go-package", cnf.GetString("goPackage"), "")
+	generateCmd.PersistentFlags().StringVar(&generateCmdOptions.goPackage, "go-package", cnf.GetString("goPackage"), "")
 
-	generateCmd.Flags().StringVar(&generateCmdOptions.spec, "spec", cnf.GetString("spec"), "")
+	generateCmd.PersistentFlags().StringVar(&generateCmdOptions.spec, "spec", cnf.GetString("spec"), "")
 
-	generateCmd.Flags().StringVar(&generateCmdOptions.projectDir, "project-dir", cnf.GetString("projectDir"), "")
+	generateCmd.PersistentFlags().StringVar(&generateCmdOptions.projectDir, "project-dir", cnf.GetString("projectDir"), "")
 
-	generateCmd.Flags().BoolVar(&generateCmdOptions.createHandlers, "create-handlers", cnf.GetBool("createHandlers"), "")
-
-	generateCmd.Flags().BoolVar(&generateCmdOptions.calculateSha, "calculate-sha", cnf.GetBool("calculateSha"), "")
+	generateCmd.PersistentFlags().BoolVar(&generateCmdOptions.createHandlers, "create-handlers", cnf.GetBool("createHandlers"), "")
 	rootCmd.AddCommand(generateCmd)
 }

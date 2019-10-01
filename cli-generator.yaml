@@ -1,7 +1,7 @@
 metadata:
   name: cli-generator
   description: Generate CLI entrypoints from spec file
-  version: 0.5.0
+  version: 0.6.0
   maintainers:
     - Oleg Sucharevich
 flags:
@@ -27,5 +27,14 @@ commands:
       type: string
     - name: create-handlers
       type: bool
-    - name: calculate-sha
-      type: bool
+- name: calculate-sha
+  flags:
+    - name: language
+      type: string
+    - name: go-package
+      type: string
+    - name: spec
+      type: string
+    - name: project-dir
+      type: string
+

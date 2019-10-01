@@ -6,6 +6,7 @@ import (
 	"text/template"
 
 	"github.com/hairyhenderson/gomplate"
+	"github.com/iancoleman/strcase"
 	"github.com/imdario/mergo"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
@@ -51,6 +52,7 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 
 		result = append(result, renderFile(fmt.Sprintf("%s/cmd/root.go", g.projectDirectory), goCmdTemplate, rootData))
 		for _, cmd := range g.spec.Commands {
+			name := strcase.ToLowerCamel(cmd.Name)
 			parent := "root"
 			cmd.Parent = &parent
 			cmdJSON, err := spec.ToJSON(cmd)
@@ -61,9 +63,9 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 				"cmd": cmdJSON,
 			}
 			mergo.Merge(&cmdData, data)
-			result = append(result, renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, cmd.Name), goCmdTemplate, cmdData))
+			result = append(result, renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), goCmdTemplate, cmdData))
 			if g.generateHandlers {
-				result = append(result, renderFile(fmt.Sprintf("%s/pkg/%s/%s.go", g.projectDirectory, cmd.Name, cmd.Name), goHandlerTemplate, cmdData))
+				result = append(result, renderFile(fmt.Sprintf("%s/pkg/%s/%s.go", g.projectDirectory, name, name), goHandlerTemplate, cmdData))
 			}
 		}
 

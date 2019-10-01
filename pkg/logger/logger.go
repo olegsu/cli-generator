@@ -16,7 +16,7 @@ type (
 
 func New(opt *Options) Logger {
 	var l Logger
-	lvl := log.LvlDebug
+	lvl := log.LvlCrit
 	if opt != nil {
 		l = log.New(log.Ctx{})
 		if opt.Verbose {

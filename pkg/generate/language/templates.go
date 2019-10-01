@@ -24,7 +24,7 @@ import (
 	"github.com/spf13/viper"
 	{{ end }}
 	{{- if not .cmd.root }}
-	handler "{{ .go.package }}/pkg/{{.cmd.name}}"
+	handler "{{ .go.package }}/pkg/{{$name}}"
 	{{end}}
 	"github.com/spf13/cobra"
 	
@@ -54,7 +54,11 @@ var {{$name}}Cmd = &cobra.Command{
 	{{- if .spec.metadata.description }}
 	Long: "{{ .spec.metadata.description }}",
 	{{- end }}
+	{{ if .cmd.root }}
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+	{{ else }}
 	PreRun: func(cmd *cobra.Command, args []string) {
+	{{ end }}
 		{{ range .cmd.flags }}
 		cnf.Set("{{- .name | strings.CamelCase }}", {{$name}}CmdOptions.{{- .name | strings.CamelCase }})
 		{{ end }}
@@ -81,7 +85,7 @@ func init() {
 	cnf.SetDefault("{{ strings.CamelCase .name}}", {{ .default }})
 	{{- end }}
 
-	{{ $name }}Cmd.Flags().{{ .type | golangFlagFunc }}(&{{ $name }}CmdOptions.{{- .name | strings.CamelCase }}, "{{- .name }}", cnf.{{ golangFlagDefaultFunc .type }}("{{ strings.CamelCase .name}}"), "{{ default "" .description }}")
+	{{ $name }}Cmd.PersistentFlags().{{ .type | golangFlagFunc }}(&{{ $name }}CmdOptions.{{- .name | strings.CamelCase }}, "{{- .name }}", cnf.{{ golangFlagDefaultFunc .type }}("{{ strings.CamelCase .name}}"), "{{ default "" .description }}")
 	
 {{- end }}
 
@@ -90,7 +94,7 @@ func init() {
 {{- end }}
 }`
 	goHandlerTemplate = `
-package {{ .cmd.name }}
+package {{ strings.CamelCase .cmd.name }}
 
 import (
 	"fmt"

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
-	"path"
 
 	"github.com/olegsu/cli-generator/pkg/generate/language"
 	"github.com/olegsu/cli-generator/pkg/logger"
@@ -18,20 +16,37 @@ import (
 
 type (
 	Handler struct{}
+
+	Options struct {
+		ResultRenderProcessor resultRenderProcessor
+		Logger                logger.Logger
+	}
+
+	resultRenderProcessor interface {
+		Process([]*language.RenderResult) error
+	}
 )
 
-func (g *Handler) Handle(cnf *viper.Viper) error {
+func (g *Handler) Handle(cnf *viper.Viper, opt ...Options) error {
+	var log logger.Logger = logger.New(&logger.Options{
+		Verbose: cnf.GetBool("verbose"),
+	})
+	var rrp resultRenderProcessor = &processor{log}
+	if len(opt) == 1 {
+		if opt[0].ResultRenderProcessor != nil {
+			rrp = opt[0].ResultRenderProcessor
+		}
+		if opt[0].Logger != nil {
+			log = opt[0].Logger
+		}
+	}
+	return handle(cnf, log, rrp)
+}
 
-	log := logger.New(nil)
+func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor) error {
 
-	calculateSha := cnf.GetBool("calculateSha")
 	projectDir := cnf.GetString("projectDir")
 	lang := cnf.GetString("language")
-
-	sha := shaCalculator{
-		path:    fmt.Sprintf("%s/.cli-generator.sha", projectDir),
-		content: bytes.NewBuffer(nil),
-	}
 
 	var err error
 	var s *spec.CLISpec
@@ -46,7 +61,6 @@ func (g *Handler) Handle(cnf *viper.Viper) error {
 	}
 
 	log.Debug("Running template engine", "lang", lang)
-	var res []*language.RenderResult
 	var renderError error
 	engine := language.New(&language.Options{
 		Type:             lang,
@@ -57,6 +71,7 @@ func (g *Handler) Handle(cnf *viper.Viper) error {
 	})
 	key, store := engine.BuildData(cnf)
 
+	var res []*language.RenderResult
 	if res, renderError = engine.Render(map[string]interface{}{
 		"spec": specJSON,
 		key:    store,
@@ -64,39 +79,8 @@ func (g *Handler) Handle(cnf *viper.Viper) error {
 		log.Error(renderError.Error())
 	}
 
-	for _, r := range res {
-		dirPath, filePath := path.Split(r.File)
-		log.Debug("Creating file", "dir", dirPath, "file", filePath)
-		err := os.MkdirAll(dirPath, os.ModePerm)
-		if err != nil {
-			log.Error(renderError.Error())
-		}
-		file, err := os.Create(r.File)
-		if err != nil {
-			log.Error(renderError.Error())
-		}
-		if err := write(r.Content, file); err != nil {
-			log.Error(renderError.Error())
-		}
-		if calculateSha {
-			sha.append(r.Content)
-		}
-		log.Debug("File created", "name", r.File)
-	}
+	return processor.Process(res)
 
-	if calculateSha {
-		data := sha.calc()
-		file, err := os.Create(sha.path)
-		if err != nil {
-			log.Error("Failed to create .cli-generator.sha file")
-			return err
-		}
-		if err = write(data, file); err != nil {
-			log.Error("Failed to write to .cli-generator.sha file")
-		}
-	}
-
-	return nil
 }
 
 func getCliSpec(path string, readFromFile func(path string) ([]byte, error)) (*spec.CLISpec, error) {
