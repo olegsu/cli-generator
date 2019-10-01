@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	
 )
-var cnf *viper.Viper
+var cnf *viper.Viper = viper.New()
 
 var rootCmdOptions struct {
 	verbose bool
@@ -42,7 +42,6 @@ func Execute() {
 
 
 func init() {
-	cnf = viper.New()
 	cnf.BindEnv("verbose", "VERBOSE")
 	cnf.SetDefault("verbose", false)
 
