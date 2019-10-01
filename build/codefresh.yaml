@@ -10,7 +10,7 @@ steps:
   version:
     image: codefresh/cli
     commands:
-    - cf_export VERSION=$(yq -r ".metadata.version" cli-generator.yaml)    
+    - cf_export VERSION=$(yq -r ".metadata.version" build/cli-generator.yaml)    
 
   git-tag:
     title: Push tag to git
@@ -27,7 +27,7 @@ steps:
         - master
 
   relase:
-    image: goreleaser/goreleaser:v0.117
+    image: goreleaser/goreleaser
     fail_fast: false
     commands:
     - goreleaser release -f goreleaser.yaml --rm-dist --skip-validate
