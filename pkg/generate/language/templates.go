@@ -31,7 +31,7 @@ import (
 )
 
 {{- if .cmd.root }}
-var cnf *viper.Viper
+var cnf *viper.Viper = viper.New()
 {{- end }}
 
 var {{$name}}CmdOptions struct {
@@ -73,11 +73,6 @@ func Execute() {
 {{ end }}
 
 func init() {
-
-{{- if .cmd.root }}
-	cnf = viper.New()
-{{- end }}
-
 {{- range .cmd.flags }}
 	{{- if .envVar }}
 	cnf.BindEnv("{{ .name }}", "{{ .envVar }}")
