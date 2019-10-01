@@ -40,7 +40,7 @@ steps:
     title: Building Docker Image
     type: build
     image_name: olsynt/cli-generator
-    Dockerfile: ./build/Dockerfile
+    dockerfile: ./build/Dockerfile
     tag: '${{CF_BRANCH_TAG_NORMALIZED}}'
 
   push_version:
