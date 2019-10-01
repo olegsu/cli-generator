@@ -8,9 +8,9 @@ steps:
     revision: ${{CF_REVISION}}
 
   version:
-    image: alpine
+    image: codefresh/cli
     commands:
-    - cf_export VERSION=$(cat VERSION)    
+    - cf_export VERSION=$(yq -r ".metadata.version" cli-generator.yaml)    
 
   git-tag:
     title: Push tag to git
