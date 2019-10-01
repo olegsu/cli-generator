@@ -1,0 +1,31 @@
+metadata:
+  name: cli-generator
+  description: Generate CLI entrypoints from spec file
+  version: 0.5.0
+  maintainers:
+    - Oleg Sucharevich
+flags:
+  - name: verbose
+    description: "Set to see more logs"
+    alias:
+      - v
+    default: false
+    envVar: "VERBOSE"
+    type: bool
+    required: true
+
+commands:
+- name: generate
+  flags:
+    - name: language
+      type: string
+    - name: go-package
+      type: string
+    - name: spec
+      type: string
+    - name: project-dir
+      type: string
+    - name: create-handlers
+      type: bool
+    - name: calculate-sha
+      type: bool

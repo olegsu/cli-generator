@@ -17,10 +17,10 @@ import (
 )
 
 type (
-	Generate struct{}
+	Handler struct{}
 )
 
-func (g *Generate) Handle(cnf *viper.Viper) error {
+func (g *Handler) Handle(cnf *viper.Viper) error {
 
 	log := logger.New(nil)
 
