@@ -21,6 +21,7 @@ package cmd
 
 import (
 	{{ if .cmd.root }}
+	"fmt"
 	"github.com/spf13/viper"
 	{{ end }}
 	{{- if not .cmd.root }}
@@ -54,11 +55,10 @@ var {{$name}}Cmd = &cobra.Command{
 	{{- if .spec.metadata.description }}
 	Long: "{{ .spec.metadata.description }}",
 	{{- end }}
-	{{ if .cmd.root }}
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-	{{ else }}
 	PreRun: func(cmd *cobra.Command, args []string) {
-	{{ end }}
+		{{- if not .cmd.root }}
+		{{ .cmd.parent }}Cmd.PreRun(cmd, args)
+		{{- end }}
 		{{ range .cmd.flags }}
 		cnf.Set("{{- .name | strings.CamelCase }}", {{$name}}CmdOptions.{{- .name | strings.CamelCase }})
 		{{ end }}
@@ -71,7 +71,7 @@ var {{$name}}Cmd = &cobra.Command{
 func Execute() {
 	err := {{$name}}Cmd.Execute()
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
 	}
 }
 {{ end }}

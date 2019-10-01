@@ -1,6 +1,9 @@
 package generate
 
 import (
+	"bytes"
+	"fmt"
+	"io"
 	"os"
 	"path"
 
@@ -32,6 +35,14 @@ func (p *processor) Process(data []*language.RenderResult) error {
 			return err
 		}
 		p.log.Debug("File created", "name", r.File)
+	}
+	return nil
+}
+
+func write(content *bytes.Buffer, writer io.Writer) error {
+	_, err := fmt.Fprintf(writer, "%s", content.String())
+	if err != nil {
+		return err
 	}
 	return nil
 }

@@ -1,9 +1,6 @@
 package generate
 
 import (
-	"bytes"
-	"fmt"
-	"io"
 	"io/ioutil"
 
 	"github.com/olegsu/cli-generator/pkg/generate/language"
@@ -94,12 +91,4 @@ func getCliSpec(path string, readFromFile func(path string) ([]byte, error)) (*s
 		return nil, err
 	}
 	return &spec, nil
-}
-
-func write(content *bytes.Buffer, writer io.Writer) error {
-	_, err := fmt.Fprintf(writer, "%s", content.String())
-	if err != nil {
-		return err
-	}
-	return nil
 }

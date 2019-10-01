@@ -27,9 +27,8 @@ var calculateShaCmd = &cobra.Command{
 		return h.Handle(cnf)
 	},
 	Long: "Generate CLI entrypoints from spec file",
-	
 	PreRun: func(cmd *cobra.Command, args []string) {
-	
+		rootCmd.PreRun(cmd, args)
 		
 		cnf.Set("language", calculateShaCmdOptions.language)
 		
