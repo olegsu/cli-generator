@@ -30,7 +30,7 @@ steps:
     image: goreleaser/goreleaser
     fail_fast: false
     commands:
-    - goreleaser release -f goreleaser.yaml --rm-dist --skip-validate
+    - goreleaser release -f ./build/goreleaser.yaml --rm-dist --skip-validate
     when:
       branch:
         only:
