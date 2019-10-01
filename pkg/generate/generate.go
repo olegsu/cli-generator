@@ -41,7 +41,6 @@ func (g *Handler) Handle(cnf *viper.Viper, opt ...Options) error {
 }
 
 func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor) error {
-
 	projectDir := cnf.GetString("projectDir")
 	lang := cnf.GetString("language")
 
@@ -64,6 +63,7 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 		Spec:             s,
 		Logger:           log.New("type", lang),
 		ProjectDirectory: projectDir,
+		RunInitFlow:      cnf.GetBool("runInitFlow"),
 		GenerateHandlers: cnf.GetBool("createHandlers"),
 	})
 	key, store := engine.BuildData(cnf)

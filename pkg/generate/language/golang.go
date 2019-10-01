@@ -10,6 +10,7 @@ import (
 	"github.com/imdario/mergo"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
+	"github.com/olegsu/cli-generator/configs/templates"
 	"github.com/spf13/viper"
 )
 
@@ -18,19 +19,21 @@ type (
 		logger           logger.Logger
 		projectDirectory string
 		generateHandlers bool
+		runInitFlow      bool
 		spec             *spec.CLISpec
 	}
 )
 
 const (
-	templateMain    = "pkg/generate/language/templates/main.tmpl"
-	templateCmd     = "pkg/generate/language/templates/cmd.tmpl"
-	templateHandler = "pkg/generate/language/templates/handler.tmpl"
+	templateMain     = "go.main.tmpl"
+	templateCmd      = "go.cmd.tmpl"
+	templateHandler  = "go.handler.tmpl"
+	templateMakefile = "go.makefile.tmpl"
 )
 
 func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 	g.logger.Debug("Renderring")
-
+	tmap := templates.TemplatesMap()
 	rootFlag := spec.Command{
 		Flags: g.spec.Flags,
 		Name:  "root",
@@ -43,14 +46,14 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 	}
 	var result []*RenderResult
 	{
-		result = append(result, renderFile(fmt.Sprintf("%s/main.go", g.projectDirectory), goMainTemplate, data))
+		result = append(result, renderFile(fmt.Sprintf("%s/main.go", g.projectDirectory), tmap[templateMain], data))
 
 		rootData := map[string]interface{}{
 			"cmd": rootJSON,
 		}
 		mergo.Merge(&rootData, data)
 
-		result = append(result, renderFile(fmt.Sprintf("%s/cmd/root.go", g.projectDirectory), goCmdTemplate, rootData))
+		result = append(result, renderFile(fmt.Sprintf("%s/cmd/root.go", g.projectDirectory), tmap[templateCmd], rootData))
 		for _, cmd := range g.spec.Commands {
 			name := strcase.ToLowerCamel(cmd.Name)
 			parent := "root"
@@ -63,12 +66,16 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 				"cmd": cmdJSON,
 			}
 			mergo.Merge(&cmdData, data)
-			result = append(result, renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), goCmdTemplate, cmdData))
+			result = append(result, renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), tmap[templateCmd], cmdData))
 			if g.generateHandlers {
-				result = append(result, renderFile(fmt.Sprintf("%s/pkg/%s/%s.go", g.projectDirectory, name, name), goHandlerTemplate, cmdData))
+				result = append(result, renderFile(fmt.Sprintf("%s/pkg/%s/%s.go", g.projectDirectory, name, name), tmap[templateHandler], cmdData))
 			}
 		}
+	}
 
+	if g.runInitFlow {
+		g.logger.Debug("Creating Makefile")
+		result = append(result, renderFile(fmt.Sprintf("%s/Makefile", g.projectDirectory), tmap[templateMakefile], data))
 	}
 
 	return result, nil

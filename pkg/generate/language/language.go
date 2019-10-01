@@ -19,6 +19,7 @@ type (
 		Logger           logger.Logger
 		ProjectDirectory string
 		GenerateHandlers bool
+		RunInitFlow      bool
 		Spec             *spec.CLISpec
 	}
 
@@ -35,6 +36,7 @@ func New(opt *Options) Engine {
 			projectDirectory: opt.ProjectDirectory,
 			spec:             opt.Spec,
 			generateHandlers: opt.GenerateHandlers,
+			runInitFlow:      opt.RunInitFlow,
 		}
 	}
 	return nil
