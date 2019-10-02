@@ -6,39 +6,16 @@ import (
 	"github.com/olegsu/cli-generator/pkg/generate/language"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
+	"github.com/spf13/viper"
 
 	"github.com/ghodss/yaml"
-	"github.com/spf13/viper"
 )
 
 type (
-	Handler struct{}
-
-	Options struct {
-		ResultRenderProcessor resultRenderProcessor
-		Logger                logger.Logger
-	}
-
 	resultRenderProcessor interface {
 		Process([]*language.RenderResult) error
 	}
 )
-
-func (g *Handler) Handle(cnf *viper.Viper, opt ...Options) error {
-	var log logger.Logger = logger.New(&logger.Options{
-		Verbose: cnf.GetBool("verbose"),
-	})
-	var rrp resultRenderProcessor = &processor{log}
-	if len(opt) == 1 {
-		if opt[0].ResultRenderProcessor != nil {
-			rrp = opt[0].ResultRenderProcessor
-		}
-		if opt[0].Logger != nil {
-			log = opt[0].Logger
-		}
-	}
-	return handle(cnf, log, rrp)
-}
 
 func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor) error {
 	projectDir := cnf.GetString("projectDir")
