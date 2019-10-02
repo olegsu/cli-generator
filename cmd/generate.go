@@ -51,7 +51,8 @@ var generateCmd = &cobra.Command{
 
 func init() {
 
-	generateCmd.PersistentFlags().StringVar(&generateCmdOptions.language, "language", cnf.GetString("language"), "")
+	
+	generateCmd.PersistentFlags().StringVar(&generateCmdOptions.language, "language", cnf.GetString("language"), "The target language of generated code [options: go]")
 
 	generateCmd.PersistentFlags().StringVar(&generateCmdOptions.goPackage, "go-package", cnf.GetString("goPackage"), "")
 

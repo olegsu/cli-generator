@@ -18,7 +18,10 @@ commands:
 - name: generate
   flags:
     - name: language
+      description: The target language of generated code
       type: string
+      enum:
+        - go
     - name: go-package
       type: string
     - name: spec

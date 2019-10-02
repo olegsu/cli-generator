@@ -69,7 +69,24 @@ func init() {
 	cnf.SetDefault("{{ strings.CamelCase .name}}", {{ .default }})
 	{{- end }}
 
-	{{ $name }}Cmd.PersistentFlags().{{ .type | golangFlagFunc }}(&{{ $name }}CmdOptions.{{- .name | strings.CamelCase }}, "{{- .name }}", cnf.{{ golangFlagDefaultFunc .type }}("{{ strings.CamelCase .name}}"), "{{ default "" .description }}")
+	{{ $description := "" }}
+	{{- if (has . "description" ) }}
+	{{ $description = .description }}
+	{{- end }}
+
+	{{- if (and ( has . "enum" ) .enum ) -}}
+		{{- $description = (printf "%s [options:" $description ) -}}
+		{{- range .enum -}}
+		{{- $description = (printf "%s %s" $description .) -}}
+		{{- end -}}
+		{{- $description = (printf "%s]" $description ) -}}
+	{{- end -}}
+
+	{{- if (has . "envVar" ) -}}
+		{{- $description = (printf "%s [$%s]" $description .envVar ) -}}
+	{{- end -}}
+	
+	{{ $name }}Cmd.PersistentFlags().{{ .type | golangFlagFunc }}(&{{ $name }}CmdOptions.{{- .name | strings.CamelCase }}, "{{- .name }}", cnf.{{ golangFlagDefaultFunc .type }}("{{ strings.CamelCase .name}}"), "{{ $description }}")
 	
 {{- end }}
 

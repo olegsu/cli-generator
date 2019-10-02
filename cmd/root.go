@@ -20,7 +20,7 @@ var rootCmdOptions struct {
 
 var rootCmd = &cobra.Command{
 	Use:     "cli-generator",
-	Version: "0.8.0",
+	Version: "0.12.0",
 	
 	Long: "Generate CLI entrypoints from spec file",
 	PreRun: func(cmd *cobra.Command, args []string) {
@@ -45,5 +45,6 @@ func init() {
 	cnf.BindEnv("verbose", "VERBOSE")
 	cnf.SetDefault("verbose", false)
 
-	rootCmd.PersistentFlags().BoolVar(&rootCmdOptions.verbose, "verbose", cnf.GetBool("verbose"), "Set to see more logs")
+	
+	rootCmd.PersistentFlags().BoolVar(&rootCmdOptions.verbose, "verbose", cnf.GetBool("verbose"), "Set to see more logs [$VERBOSE]")
 }
