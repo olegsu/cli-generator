@@ -1,7 +1,7 @@
 metadata:
   name: cli-generator
   description: Generate CLI entrypoints from spec file
-  version: 0.10.0
+  version: 0.11.0
   maintainers:
     - Oleg Sucharevich
 flags:

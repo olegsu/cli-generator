@@ -8,9 +8,9 @@ import (
 	"github.com/hairyhenderson/gomplate"
 	"github.com/iancoleman/strcase"
 	"github.com/imdario/mergo"
+	"github.com/olegsu/cli-generator/configs/templates"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
-	"github.com/olegsu/cli-generator/configs/templates"
 	"github.com/spf13/viper"
 )
 
@@ -68,7 +68,7 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 			mergo.Merge(&cmdData, data)
 			result = append(result, renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), tmap[templateCmd], cmdData))
 			if g.generateHandlers {
-				result = append(result, renderFile(fmt.Sprintf("%s/pkg/%s/%s.go", g.projectDirectory, name, name), tmap[templateHandler], cmdData))
+				result = append(result, renderFile(fmt.Sprintf("%s/pkg/%s/handler.go", g.projectDirectory, name), tmap[templateHandler], cmdData))
 			}
 		}
 	}
