@@ -23,7 +23,8 @@
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "default": []
                 },
                 "default": {
                     "type": "string"
@@ -69,6 +70,10 @@
                     "items": {
                         "$ref": "#/definitions/flag"
                     }
+                },
+                "loose": {
+                    "type": "boolean",
+                    "default": false
                 }
             },
             "required": [
@@ -108,6 +113,10 @@
             "items": {
                 "$ref": "#/definitions/flag"
             }
+        },
+        "loose": {
+            "type": "boolean",
+            "default": false
         }
     },
     "required": [

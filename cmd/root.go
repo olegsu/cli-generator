@@ -20,8 +20,7 @@ var rootCmdOptions struct {
 
 var rootCmd = &cobra.Command{
 	Use:     "cli-generator",
-	Version: "0.12.0",
-	
+	Version: "0.13.0",
 	Long: "Generate CLI entrypoints from spec file",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		

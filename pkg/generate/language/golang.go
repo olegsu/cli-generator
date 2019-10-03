@@ -38,6 +38,7 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 		Flags: g.spec.Flags,
 		Name:  "root",
 		Root:  true,
+		Loose: g.spec.Loose,
 	}
 
 	rootJSON, err := spec.ToJSON(rootFlag)

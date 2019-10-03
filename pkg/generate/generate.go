@@ -3,6 +3,7 @@ package generate
 import (
 	"io/ioutil"
 
+	"github.com/olegsu/cli-generator/configs/templates"
 	"github.com/olegsu/cli-generator/pkg/generate/language"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
@@ -30,6 +31,10 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 	}
 
 	if specJSON, err = spec.ToJSON(s); err != nil {
+		return err
+	}
+
+	if err := s.Validate([]byte(templates.TemplatesMap()["spec.json"])); err != nil {
 		return err
 	}
 

@@ -9,7 +9,6 @@ require (
 	github.com/boltdb/bolt v1.3.1 // indirect
 	github.com/docker/libkv v0.2.1 // indirect
 	github.com/dustin/gojson v0.0.0-20160307161227-2e71ec9dd5ad // indirect
-	github.com/franela/goblin v0.0.0-20181003173013-ead4ad1d2727
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/gosimple/slug v1.7.0 // indirect
@@ -23,6 +22,7 @@ require (
 	github.com/inconshreveable/log15 v0.0.0-20180818164646-67afb5ed74ec
 	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect
+	github.com/qri-io/jsonschema v0.1.1
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337 // indirect
 	github.com/spf13/cobra v0.0.5

@@ -20,40 +20,43 @@ func (r *CLISpec) Marshal() ([]byte, error) {
 
 type CLISpec struct {
 	Commands []Command `json:"commands"`
-	Flags    []Flag    `json:"flags"`   
+	Flags    []Flag    `json:"flags,omitempty"`
+	Loose    *bool     `json:"loose,omitempty"`
 	Metadata Metadata  `json:"metadata"`
 }
 
 type Command struct {
-	Flags  []Flag  `json:"flags"`           
-	Name   string  `json:"name"`            
+	Flags  []Flag  `json:"flags,omitempty"`
+	Loose  *bool   `json:"loose,omitempty"`
+	Name   string  `json:"name"`
 	Parent *string `json:"parent,omitempty"`
-	Root   bool    `json:"root"`            
+	Root   bool    `json:"root"`
 }
 
 type Flag struct {
-	Alias       []string `json:"alias"`                
-	Default     *string  `json:"default,omitempty"`    
+	Alias       []string `json:"alias,omitempty"`
+	Default     *string  `json:"default,omitempty"`
 	Description *string  `json:"description,omitempty"`
-	Enum        []string `json:"enum"`                 
-	EnvVar      *string  `json:"envVar,omitempty"`     
-	Name        string   `json:"name"`                 
-	Required    bool     `json:"required"`             
-	Type        Type     `json:"type"`                 
+	Enum        []string `json:"enum,omitempty"`
+	EnvVar      *string  `json:"envVar,omitempty"`
+	Name        string   `json:"name"`
+	Required    bool     `json:"required"`
+	Type        Type     `json:"type"`
 }
 
 type Metadata struct {
 	Description *string `json:"description,omitempty"`
-	Name        string  `json:"name"`                 // CLI Name
-	Version     string  `json:"version"`              
+	Name        string  `json:"name"` // CLI Name
+	Version     string  `json:"version"`
 }
 
 type Type string
+
 const (
-	ArrayBool Type = "arrayBool"
+	ArrayBool   Type = "arrayBool"
 	ArrayNumber Type = "arrayNumber"
 	ArrayString Type = "arrayString"
-	Bool Type = "bool"
-	Number Type = "number"
-	String Type = "string"
+	Bool        Type = "bool"
+	Number      Type = "number"
+	String      Type = "string"
 )

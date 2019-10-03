@@ -16,7 +16,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	{{ end }}
-	{{- if not .cmd.root }}
+	{{- if not .cmd.loose }}
 	handler "{{ .go.package }}/pkg/{{$name}}"
 	{{end}}
 	"github.com/spf13/cobra"
@@ -37,8 +37,10 @@ var {{$name}}Cmd = &cobra.Command{
 	{{- if .cmd.root }}
 	Use:     "{{ .spec.metadata.name }}",
 	Version: "{{ .spec.metadata.version }}",
-	{{ else }}
+	{{- else }}
 	Use:     "{{ .cmd.name }}",
+	{{- end }}
+	{{- if not .cmd.loose }}
 	RunE: func(cmd *cobra.Command, args []string) error {
 		h := &handler.Handler{}
 		return h.Handle(cnf)
@@ -149,6 +151,132 @@ build:
 	@go build -o $(outfile) *.go
 	@chmod +x $(outfile)
 ` 
+
+templatesMap["spec.json"] = `{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "definitions": {
+        "flag": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "string",
+                        "bool",
+                        "number",
+                        "arrayBool",
+                        "arrayString",
+                        "arrayNumber"
+                    ]
+                },
+                "alias": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": []
+                },
+                "default": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean",
+                    "default": false                    
+                },
+                "enum": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "envVar": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "required",
+                "type"
+            ]
+        },
+        "command": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "root": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/flag"
+                    }
+                },
+                "loose": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "required": [
+                "name",
+                "root"
+            ]
+        }
+    },
+    "properties": {
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "CLI Name",
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "version"
+            ]
+        },
+        "commands": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/command"
+            }
+        },
+        "flags": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/flag"
+            }
+        },
+        "loose": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "required": [
+        "metadata"
+    ]
+}` 
 
     return  templatesMap
 }

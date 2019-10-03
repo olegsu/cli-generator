@@ -1,9 +1,10 @@
 metadata:
   name: cli-generator
   description: Generate CLI entrypoints from spec file
-  version: 0.12.0
+  version: 0.13.0
   maintainers:
     - Oleg Sucharevich
+loose: true
 flags:
   - name: verbose
     description: "Set to see more logs"
@@ -13,7 +14,6 @@ flags:
     envVar: "VERBOSE"
     type: bool
     required: true
-
 commands:
 - name: generate
   flags:
@@ -42,4 +42,3 @@ commands:
       type: string
     - name: project-dir
       type: string
-

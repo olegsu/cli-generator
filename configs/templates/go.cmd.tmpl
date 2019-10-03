@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	{{ end }}
-	{{- if not .cmd.root }}
+	{{- if not .cmd.loose }}
 	handler "{{ .go.package }}/pkg/{{$name}}"
 	{{end}}
 	"github.com/spf13/cobra"
@@ -29,8 +29,10 @@ var {{$name}}Cmd = &cobra.Command{
 	{{- if .cmd.root }}
 	Use:     "{{ .spec.metadata.name }}",
 	Version: "{{ .spec.metadata.version }}",
-	{{ else }}
+	{{- else }}
 	Use:     "{{ .cmd.name }}",
+	{{- end }}
+	{{- if not .cmd.loose }}
 	RunE: func(cmd *cobra.Command, args []string) error {
 		h := &handler.Handler{}
 		return h.Handle(cnf)
