@@ -210,13 +210,16 @@ templatesMap["spec.json"] = `{
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": ".+"
                 },
                 "parent": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Applicative property, user data will be ignored"
                 },
                 "root": {
                     "type": "boolean",
+                    "description": "Applicative property, user data will be ignored",
                     "default": false
                 },
                 "flags": {
@@ -242,7 +245,8 @@ templatesMap["spec.json"] = `{
             "properties": {
                 "name": {
                     "description": "CLI Name",
-                    "type": "string"
+                    "type": "string",
+                    "pattern": ".+"
                 },
                 "version": {
                     "type": "string"

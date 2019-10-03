@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/ghodss/yaml"
 	"github.com/qri-io/jsonschema"
 )
 
@@ -30,6 +31,7 @@ func (cli *CLISpec) Validate(schema []byte) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(b))
 	res, err := rs.ValidateBytes(b)
 	if err != nil {
 		return err
@@ -42,4 +44,17 @@ func (cli *CLISpec) Validate(schema []byte) error {
 		return fmt.Errorf(message)
 	}
 	return nil
+}
+
+func GetCliSpec(path string, readFromFile func(path string) ([]byte, error)) (*CLISpec, error) {
+	var err error
+	var specData []byte
+	var spec = CLISpec{}
+	if specData, err = readFromFile(path); err != nil {
+		return nil, err
+	}
+	if err = yaml.Unmarshal(specData, &spec); err != nil {
+		return nil, err
+	}
+	return &spec, nil
 }

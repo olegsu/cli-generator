@@ -8,8 +8,6 @@ import (
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
 	"github.com/spf13/viper"
-
-	"github.com/ghodss/yaml"
 )
 
 type (
@@ -26,7 +24,7 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 	var s *spec.CLISpec
 	var specJSON map[string]interface{}
 
-	if s, err = getCliSpec(cnf.GetString("spec"), ioutil.ReadFile); err != nil {
+	if s, err = spec.GetCliSpec(cnf.GetString("spec"), ioutil.ReadFile); err != nil {
 		return err
 	}
 
@@ -60,17 +58,4 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 
 	return processor.Process(res)
 
-}
-
-func getCliSpec(path string, readFromFile func(path string) ([]byte, error)) (*spec.CLISpec, error) {
-	var err error
-	var specData []byte
-	var spec = spec.CLISpec{}
-	if specData, err = readFromFile(path); err != nil {
-		return nil, err
-	}
-	if err = yaml.Unmarshal(specData, &spec); err != nil {
-		return nil, err
-	}
-	return &spec, nil
 }

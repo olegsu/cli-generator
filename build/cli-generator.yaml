@@ -1,7 +1,7 @@
 metadata:
   name: cli-generator
   description: Generate CLI entrypoints from spec file
-  version: 0.13.0
+  version: 0.14.0
   maintainers:
     - Oleg Sucharevich
 loose: true
@@ -41,4 +41,9 @@ commands:
     - name: spec
       type: string
     - name: project-dir
+      type: string
+- name: validate
+  description: Validate cli.yaml with spec file
+  flags:
+    - name: spec
       type: string
