@@ -166,7 +166,7 @@ func main() {
 	cmd.Execute()
 }` 
 
-templatesMap["go.makefile.tmpl"] = `outfile = /usr/local/bin/{{.spec.metadata.name}}
+templatesMap["go.makefile.tmpl"] = `outfile = {{.spec.metadata.name}}
 build:
 	@echo "Building go binary"
 	@go build -o $(outfile) *.go
