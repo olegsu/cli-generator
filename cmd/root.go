@@ -5,11 +5,10 @@ package cmd
 
 import (
 	
-	"fmt"
 	"github.com/spf13/viper"
+	"fmt"
 	
 	"github.com/spf13/cobra"
-	
 )
 var cnf *viper.Viper = viper.New()
 
@@ -20,7 +19,7 @@ var rootCmdOptions struct {
 
 var rootCmd = &cobra.Command{
 	Use:     "cli-generator",
-	Version: "0.13.0",
+	Version: "0.14.0",
 	Long: "Generate CLI entrypoints from spec file",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		

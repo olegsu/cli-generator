@@ -13,14 +13,14 @@ package cmd
 
 import (
 	{{ if .cmd.root }}
-	"fmt"
 	"github.com/spf13/viper"
+	"fmt"
 	{{ end }}
+
 	{{- if not .cmd.loose }}
 	handler "{{ .go.package }}/pkg/{{$name}}"
 	{{end}}
 	"github.com/spf13/cobra"
-	
 )
 
 {{- if .cmd.root }}
@@ -41,6 +41,22 @@ var {{$name}}Cmd = &cobra.Command{
 	Use:     "{{ .cmd.name }}",
 	{{- end }}
 	{{- if not .cmd.loose }}
+
+	{{- if (has .cmd "arg" )}}
+	Args: func (cmd *cobra.Command, args []string) error {
+		var validators []func(cmd *cobra.Command, args []string) error
+		{{- range .cmd.arg.rules }}
+		validators = append(validators, {{ . | golangRulesToArgsValidation }})
+		{{- end}}
+		for _, v := range validators {
+			if err := v(cmd, args); err != nil {
+				return err
+			}
+		}
+		return nil
+	},
+	{{- end }}
+
 	RunE: func(cmd *cobra.Command, args []string) error {
 		h := &handler.Handler{}
 		return h.Handle(cnf)
@@ -50,6 +66,11 @@ var {{$name}}Cmd = &cobra.Command{
 	Long: "{{ .spec.metadata.description }}",
 	{{- end }}
 	PreRun: func(cmd *cobra.Command, args []string) {
+
+		{{- if (has .cmd "arg" )}}
+		cnf.Set("{{.cmd.arg.name}}", args )
+		{{- end }}
+
 		{{- if not .cmd.root }}
 		{{ .cmd.parent }}Cmd.PreRun(cmd, args)
 		{{- end }}
@@ -231,11 +252,39 @@ templatesMap["spec.json"] = `{
                 "loose": {
                     "type": "boolean",
                     "default": false
+                },
+                "arg": {
+                    "$ref": "#/definitions/argument"
                 }
             },
             "required": [
                 "name",
                 "root"
+            ]
+        },
+        "argument": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "any",
+                            "atLeastOne",
+                            "atLeastTwo"
+                        ]
+                    },
+                    "default": [
+                        "any"
+                    ]
+                }
+            },
+            "required": [
+                "name"
             ]
         }
     },
@@ -275,6 +324,9 @@ templatesMap["spec.json"] = `{
         "loose": {
             "type": "boolean",
             "default": false
+        },
+        "arg": {
+            "$ref": "#/definitions/argument"
         }
     },
     "required": [

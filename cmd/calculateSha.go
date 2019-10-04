@@ -8,7 +8,6 @@ import (
 	handler "github.com/olegsu/cli-generator/pkg/calculateSha"
 	
 	"github.com/spf13/cobra"
-	
 )
 
 var calculateShaCmdOptions struct {
@@ -21,6 +20,7 @@ var calculateShaCmdOptions struct {
 
 var calculateShaCmd = &cobra.Command{
 	Use:     "calculate-sha",
+
 	RunE: func(cmd *cobra.Command, args []string) error {
 		h := &handler.Handler{}
 		return h.Handle(cnf)

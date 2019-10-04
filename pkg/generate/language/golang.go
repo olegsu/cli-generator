@@ -94,6 +94,7 @@ func getCommonTemplateFuncs() template.FuncMap {
 	funcs["toGolangType"] = toGolangType
 	funcs["golangFlagFunc"] = golangFlagFunc
 	funcs["golangFlagDefaultFunc"] = golangFlagDefaultFunc
+	funcs["golangRulesToArgsValidation"] = golangRulesToArgsValidation
 	return funcs
 }
 

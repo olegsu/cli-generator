@@ -44,6 +44,7 @@ commands:
       type: string
 - name: validate
   description: Validate cli.yaml with spec file
-  flags:
-    - name: spec
-      type: string
+  arg:
+    name: spec
+    rules:
+      - atLeastOne

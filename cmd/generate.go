@@ -8,7 +8,6 @@ import (
 	handler "github.com/olegsu/cli-generator/pkg/generate"
 	
 	"github.com/spf13/cobra"
-	
 )
 
 var generateCmdOptions struct {
@@ -23,6 +22,7 @@ var generateCmdOptions struct {
 
 var generateCmd = &cobra.Command{
 	Use:     "generate",
+
 	RunE: func(cmd *cobra.Command, args []string) error {
 		h := &handler.Handler{}
 		return h.Handle(cnf)

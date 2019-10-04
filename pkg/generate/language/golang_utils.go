@@ -45,3 +45,18 @@ func golangFlagFunc(t string) string {
 	}
 	return ""
 }
+
+func golangRulesToArgsValidation(rule string) string {
+	res := ""
+
+	switch spec.Rule(rule) {
+	case spec.Any:
+		return "cobra.ArbitraryArgs"
+	case spec.AtLeastOne:
+		return "cobra.MinimumNArgs(1)"
+	case spec.AtLeastTwo:
+		return "cobra.MinimumNArgs(2)"
+	}
+
+	return res
+}

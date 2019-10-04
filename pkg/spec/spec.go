@@ -19,18 +19,25 @@ func (r *CLISpec) Marshal() ([]byte, error) {
 }
 
 type CLISpec struct {
+	Arg      *Argument `json:"arg,omitempty"`
 	Commands []Command `json:"commands"`
 	Flags    []Flag    `json:"flags,omitempty"`
 	Loose    *bool     `json:"loose,omitempty"`
 	Metadata Metadata  `json:"metadata"`
 }
 
+type Argument struct {
+	Name  string `json:"name"`
+	Rules []Rule `json:"rules"`
+}
+
 type Command struct {
-	Flags  []Flag  `json:"flags,omitempty"`
-	Loose  *bool   `json:"loose,omitempty"`
-	Name   string  `json:"name"`
-	Parent *string `json:"parent,omitempty"`
-	Root   bool    `json:"root"`
+	Arg    *Argument `json:"arg,omitempty"`
+	Flags  []Flag    `json:"flags,omitempty"`
+	Loose  *bool     `json:"loose,omitempty"`
+	Name   string    `json:"name"`
+	Parent *string   `json:"parent,omitempty"` // Applicative property, user data will be ignored
+	Root   bool      `json:"root"`             // Applicative property, user data will be ignored
 }
 
 type Flag struct {
@@ -49,6 +56,14 @@ type Metadata struct {
 	Name        string  `json:"name"` // CLI Name
 	Version     string  `json:"version"`
 }
+
+type Rule string
+
+const (
+	Any        Rule = "any"
+	AtLeastOne Rule = "atLeastOne"
+	AtLeastTwo Rule = "atLeastTwo"
+)
 
 type Type string
 

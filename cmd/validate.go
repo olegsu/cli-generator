@@ -8,25 +8,33 @@ import (
 	handler "github.com/olegsu/cli-generator/pkg/validate"
 	
 	"github.com/spf13/cobra"
-	
 )
 
 var validateCmdOptions struct {
-	spec string
 	
 }
 
 var validateCmd = &cobra.Command{
 	Use:     "validate",
+	Args: func (cmd *cobra.Command, args []string) error {
+		var validators []func(cmd *cobra.Command, args []string) error
+		validators = append(validators, cobra.MinimumNArgs(1))
+		for _, v := range validators {
+			if err := v(cmd, args); err != nil {
+				return err
+			}
+		}
+		return nil
+	},
+
 	RunE: func(cmd *cobra.Command, args []string) error {
 		h := &handler.Handler{}
 		return h.Handle(cnf)
 	},
 	Long: "Generate CLI entrypoints from spec file",
 	PreRun: func(cmd *cobra.Command, args []string) {
+		cnf.Set("spec", args )
 		rootCmd.PreRun(cmd, args)
-		
-		cnf.Set("spec", validateCmdOptions.spec)
 		
 	},
 }
@@ -35,7 +43,5 @@ var validateCmd = &cobra.Command{
 
 
 func init() {
-
-	validateCmd.PersistentFlags().StringVar(&validateCmdOptions.spec, "spec", cnf.GetString("spec"), "")
 	rootCmd.AddCommand(validateCmd)
 }

@@ -23,8 +23,8 @@ func (g *Handler) Handle(cnf *viper.Viper) error {
 	var s *spec.CLISpec
 	var err error
 
-	log.Debug("Validating spec", "path", cnf.GetString("spec"))
-	if s, err = spec.GetCliSpec(cnf.GetString("spec"), ioutil.ReadFile); err != nil {
+	log.Debug("Validating spec", "path", cnf.GetStringSlice("spec")[0])
+	if s, err = spec.GetCliSpec(cnf.GetStringSlice("spec")[0], ioutil.ReadFile); err != nil {
 		return err
 	}
 

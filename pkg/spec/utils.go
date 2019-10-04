@@ -31,7 +31,6 @@ func (cli *CLISpec) Validate(schema []byte) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(b))
 	res, err := rs.ValidateBytes(b)
 	if err != nil {
 		return err

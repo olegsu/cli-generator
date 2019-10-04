@@ -77,11 +77,39 @@
                 "loose": {
                     "type": "boolean",
                     "default": false
+                },
+                "arg": {
+                    "$ref": "#/definitions/argument"
                 }
             },
             "required": [
                 "name",
                 "root"
+            ]
+        },
+        "argument": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "any",
+                            "atLeastOne",
+                            "atLeastTwo"
+                        ]
+                    },
+                    "default": [
+                        "any"
+                    ]
+                }
+            },
+            "required": [
+                "name"
             ]
         }
     },
@@ -121,6 +149,9 @@
         "loose": {
             "type": "boolean",
             "default": false
+        },
+        "arg": {
+            "$ref": "#/definitions/argument"
         }
     },
     "required": [
