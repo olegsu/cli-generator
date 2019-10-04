@@ -34,11 +34,18 @@ const (
 func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 	g.logger.Debug("Renderring")
 	tmap := templates.TemplatesMap()
+	var rootLoose *bool
+	if g.spec.Loose != nil {
+		rootLoose = g.spec.Loose
+	} else {
+		l := true
+		rootLoose = &l
+	}
 	rootFlag := spec.Command{
 		Flags: g.spec.Flags,
 		Name:  "root",
 		Root:  true,
-		Loose: g.spec.Loose,
+		Loose: rootLoose,
 	}
 
 	rootJSON, err := spec.ToJSON(rootFlag)
