@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"text/template"
 
-	"github.com/hairyhenderson/gomplate"
 	"github.com/iancoleman/strcase"
 	"github.com/imdario/mergo"
 	"github.com/olegsu/cli-generator/configs/templates"
@@ -41,49 +40,46 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 		l := true
 		rootLoose = &l
 	}
-	rootFlag := spec.Command{
-		Flags: g.spec.Flags,
-		Name:  "root",
-		Root:  true,
-		Loose: rootLoose,
+	r := "root"
+	rootCmd := spec.Command{
+		Flags:    g.spec.Flags,
+		Name:     r,
+		Parent:   &r,
+		Root:     true,
+		Loose:    rootLoose,
+		Commands: []spec.Command{},
+	}
+	for _, cmd := range g.spec.Commands {
+		rootCmd.Commands = append(rootCmd.Commands, cmd)
 	}
 
-	rootJSON, err := spec.ToJSON(rootFlag)
+	rootJSON, err := spec.ToJSON(rootCmd)
 	if err != nil {
 		return nil, err
 	}
 	var result []*RenderResult
 	{
-		result = append(result, renderFile(fmt.Sprintf("%s/main.go", g.projectDirectory), tmap[templateMain], data))
+		result = append(result, g.renderFile(fmt.Sprintf("%s/main.go", g.projectDirectory), tmap[templateMain], data))
 
 		rootData := map[string]interface{}{
 			"cmd": rootJSON,
 		}
 		mergo.Merge(&rootData, data)
 
-		result = append(result, renderFile(fmt.Sprintf("%s/cmd/root.go", g.projectDirectory), tmap[templateCmd], rootData))
-		for _, cmd := range g.spec.Commands {
-			name := strcase.ToLowerCamel(cmd.Name)
-			parent := "root"
-			cmd.Parent = &parent
-			cmdJSON, err := spec.ToJSON(cmd)
-			if err != nil {
-				return nil, err
-			}
-			cmdData := map[string]interface{}{
-				"cmd": cmdJSON,
-			}
-			mergo.Merge(&cmdData, data)
-			result = append(result, renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), tmap[templateCmd], cmdData))
-			if g.generateHandlers {
-				result = append(result, renderFile(fmt.Sprintf("%s/pkg/%s/handler.go", g.projectDirectory, name), tmap[templateHandler], cmdData))
-			}
+		result = append(result, g.renderFile(fmt.Sprintf("%s/cmd/root.go", g.projectDirectory), tmap[templateCmd], rootData))
+		res, err := g.renderCommands(rootCmd, tmap, data)
+		if err != nil {
+			return nil, err
 		}
+		for _, r := range res {
+			result = append(result, r)
+		}
+
 	}
 
 	if g.runInitFlow {
 		g.logger.Debug("Creating Makefile")
-		result = append(result, renderFile(fmt.Sprintf("%s/Makefile", g.projectDirectory), tmap[templateMakefile], data))
+		result = append(result, g.renderFile(fmt.Sprintf("%s/Makefile", g.projectDirectory), tmap[templateMakefile], data))
 	}
 
 	return result, nil
@@ -96,16 +92,7 @@ func (g *golang) BuildData(cnf *viper.Viper) (string, map[string]interface{}) {
 	return "go", res
 }
 
-func getCommonTemplateFuncs() template.FuncMap {
-	funcs := gomplate.Funcs(nil)
-	funcs["toGolangType"] = toGolangType
-	funcs["golangFlagFunc"] = golangFlagFunc
-	funcs["golangFlagDefaultFunc"] = golangFlagDefaultFunc
-	funcs["golangRulesToArgsValidation"] = golangRulesToArgsValidation
-	return funcs
-}
-
-func renderFile(name string, tmpl string, data interface{}) *RenderResult {
+func (g *golang) renderFile(name string, tmpl string, data interface{}) *RenderResult {
 	res := &RenderResult{
 		File: name,
 	}
@@ -113,4 +100,33 @@ func renderFile(name string, tmpl string, data interface{}) *RenderResult {
 	template.Must(template.New("").Funcs(getCommonTemplateFuncs()).Parse(string(tmpl))).Execute(out, data)
 	res.Content = out
 	return res
+}
+
+func (g *golang) renderCommands(root spec.Command, templateMap map[string]string, data interface{}) ([]*RenderResult, error) {
+	result := []*RenderResult{}
+	for _, cmd := range root.Commands {
+		name := strcase.ToLowerCamel(cmd.Name)
+		cmd.Parent = &root.Name
+		cmdJSON, err := spec.ToJSON(cmd)
+		if err != nil {
+			return nil, err
+		}
+		cmdData := map[string]interface{}{
+			"cmd": cmdJSON,
+		}
+		mergo.Merge(&cmdData, data)
+		result = append(result, g.renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), templateMap[templateCmd], cmdData))
+		if g.generateHandlers {
+			result = append(result, g.renderFile(fmt.Sprintf("%s/pkg/%s/handler.go", g.projectDirectory, name), templateMap[templateHandler], cmdData))
+		}
+		res, err := g.renderCommands(cmd, templateMap, data)
+		if err != nil {
+			return nil, err
+		}
+		for _, r := range res {
+			result = append(result, r)
+		}
+
+	}
+	return result, nil
 }

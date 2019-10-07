@@ -1,6 +1,9 @@
 package language
 
 import (
+	"text/template"
+
+	"github.com/hairyhenderson/gomplate"
 	"github.com/olegsu/cli-generator/pkg/spec"
 )
 
@@ -57,6 +60,14 @@ func golangRulesToArgsValidation(rule string) string {
 	case spec.AtLeastTwo:
 		return "cobra.MinimumNArgs(2)"
 	}
-
 	return res
+}
+
+func getCommonTemplateFuncs() template.FuncMap {
+	funcs := gomplate.Funcs(nil)
+	funcs["toGolangType"] = toGolangType
+	funcs["golangFlagFunc"] = golangFlagFunc
+	funcs["golangFlagDefaultFunc"] = golangFlagDefaultFunc
+	funcs["golangRulesToArgsValidation"] = golangRulesToArgsValidation
+	return funcs
 }

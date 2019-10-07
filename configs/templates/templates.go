@@ -121,7 +121,7 @@ func init() {
 	
 {{- end }}
 
-{{- if .cmd.parent }}
+{{- if not .cmd.root }}
 	{{ .cmd.parent }}Cmd.AddCommand({{$name}}Cmd)
 {{- end }}
 }` 
@@ -255,6 +255,12 @@ templatesMap["spec.json"] = `{
                 },
                 "arg": {
                     "$ref": "#/definitions/argument"
+                },
+                "commands": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/command"
+                    }
                 }
             },
             "required": [

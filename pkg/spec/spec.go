@@ -32,12 +32,13 @@ type Argument struct {
 }
 
 type Command struct {
-	Arg    *Argument `json:"arg,omitempty"`
-	Flags  []Flag    `json:"flags,omitempty"`
-	Loose  *bool     `json:"loose,omitempty"`
-	Name   string    `json:"name"`
-	Parent *string   `json:"parent,omitempty"` // Applicative property, user data will be ignored
-	Root   bool      `json:"root"`             // Applicative property, user data will be ignored
+	Arg      *Argument `json:"arg,omitempty"`
+	Commands []Command `json:"commands,omitempty"`
+	Flags    []Flag    `json:"flags,omitempty"`
+	Loose    *bool     `json:"loose,omitempty"`
+	Name     string    `json:"name"`
+	Parent   *string   `json:"parent,omitempty"` // Applicative property, user data will be ignored
+	Root     bool      `json:"root"`             // Applicative property, user data will be ignored
 }
 
 type Flag struct {

@@ -80,6 +80,12 @@
                 },
                 "arg": {
                     "$ref": "#/definitions/argument"
+                },
+                "commands": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/command"
+                    }
                 }
             },
             "required": [

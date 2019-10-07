@@ -113,7 +113,7 @@ func init() {
 	
 {{- end }}
 
-{{- if .cmd.parent }}
+{{- if not .cmd.root }}
 	{{ .cmd.parent }}Cmd.AddCommand({{$name}}Cmd)
 {{- end }}
 }

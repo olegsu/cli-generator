@@ -1,0 +1,11 @@
+metadata:
+  name: cli-example-sub-command
+  description: This examples shows thow to generate CLI application that have sub-commands
+  version: 0.0.1
+  maintainers:
+    - Oleg Sucharevich
+commands:
+- name: cmd
+  loose: false
+  commands:
+  - name: sub
