@@ -1,7 +1,7 @@
 metadata:
   name: cli-generator
   description: Generate CLI entrypoints from spec file
-  version: 0.17.0
+  version: 0.18.0
   maintainers:
     - Oleg Sucharevich
 loose: true
@@ -31,6 +31,8 @@ commands:
     - name: create-handlers
       type: bool
     - name: run-init-flow
+      type: bool
+    - name: run-post-init-flow
       type: bool
 - name: calculate-sha
   flags:

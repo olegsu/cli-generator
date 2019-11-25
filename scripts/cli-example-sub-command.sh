@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-make build-local
+make build
 
 echo "Generating new CLI: cli-example-sub-command"
 cli-generator-dev generate --project-dir cli-example-sub-command --language go --spec ./examples/cli-example-sub-command.yaml --go-package github.com/cli-example-sub-command/cli-example-sub-command --create-handlers --run-init-flow --verbose

@@ -1,10 +1,13 @@
 #!/bin/bash
 set -e
 
-make build-local
+make build
+
+echo "Generating greed directory"
+mkdir greet
 
 echo "Generating new CLI: greet"
-cli-generator-dev generate --project-dir greet --language go --spec ./examples/greet.yaml --go-package github.com/greet/greet --create-handlers --run-init-flow --verbose
+cli-generator-dev generate --project-dir greet --language go --spec ./examples/greet.yaml --go-package github.com/greet/greet --create-handlers --run-init-flow --verbose --run-post-init-flow
 
 cd greet
 

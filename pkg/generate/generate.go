@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 
 	"github.com/olegsu/cli-generator/configs/templates"
+	"github.com/olegsu/cli-generator/pkg/engine"
 	"github.com/olegsu/cli-generator/pkg/generate/language"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
@@ -14,9 +15,13 @@ type (
 	resultRenderProcessor interface {
 		Process([]*language.RenderResult) error
 	}
+
+	taskRunner interface {
+		Run(engine.Task) error
+	}
 )
 
-func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor) error {
+func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor, taskRunner engine.Runner) error {
 	projectDir := cnf.GetString("projectDir")
 	lang := cnf.GetString("language")
 
@@ -38,24 +43,39 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 
 	log.Debug("Running template engine", "lang", lang)
 	var renderError error
-	engine := language.New(&language.Options{
+	e := language.New(&language.Options{
 		Type:             lang,
 		Spec:             s,
 		Logger:           log.New("type", lang),
 		ProjectDirectory: projectDir,
 		RunInitFlow:      cnf.GetBool("runInitFlow"),
 		GenerateHandlers: cnf.GetBool("createHandlers"),
+		GoPackage:        cnf.GetString("goPackage"),
 	})
-	key, store := engine.BuildData(cnf)
+	key, store := e.BuildData(cnf)
 
 	var res []*language.RenderResult
-	if res, renderError = engine.Render(map[string]interface{}{
+	if res, renderError = e.Render(map[string]interface{}{
 		"spec": specJSON,
 		key:    store,
 	}); renderError != nil {
 		log.Error(renderError.Error())
 	}
 
-	return processor.Process(res)
+	err = processor.Process(res)
+	if err != nil {
+		return err
+	}
+	if cnf.GetBool("runPostInitFlow") {
+		for _, t := range e.PostInitFlow() {
+			log.Debug("Running task", "task", t)
+			err := taskRunner.Run(t)
+			if err != nil {
+				log.Error("Failed to run task", "task", t.Name, "error", err.Error())
+				return err
+			}
+		}
+	}
+	return nil
 
 }

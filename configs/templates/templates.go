@@ -15,6 +15,7 @@ import (
 	{{ if .cmd.root }}
 	"github.com/spf13/viper"
 	"fmt"
+	"os"
 	{{ end }}
 
 	{{- if not .cmd.loose }}
@@ -87,6 +88,7 @@ func Execute() {
 	err := {{$name}}Cmd.Execute()
 	if err != nil {
 		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 }
 {{ end }}

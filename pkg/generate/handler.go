@@ -1,6 +1,7 @@
 package generate
 
 import (
+	"github.com/olegsu/cli-generator/pkg/engine"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/spf13/viper"
 )
@@ -12,6 +13,7 @@ type (
 	// Options additional options to Handle func
 	Options struct {
 		ResultRenderProcessor resultRenderProcessor
+		TaskRunner            taskRunner
 		Logger                logger.Logger
 	}
 )
@@ -22,6 +24,7 @@ func (g *Handler) Handle(cnf *viper.Viper, opt ...Options) error {
 		Verbose: cnf.GetBool("verbose"),
 	})
 	var rrp resultRenderProcessor = &processor{log}
+	var taskRunner taskRunner = engine.New(nil)
 	if len(opt) == 1 {
 		if opt[0].ResultRenderProcessor != nil {
 			rrp = opt[0].ResultRenderProcessor
@@ -30,5 +33,5 @@ func (g *Handler) Handle(cnf *viper.Viper, opt ...Options) error {
 			log = opt[0].Logger
 		}
 	}
-	return handle(cnf, log, rrp)
+	return handle(cnf, log, rrp, taskRunner)
 }

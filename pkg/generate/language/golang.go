@@ -8,6 +8,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/imdario/mergo"
 	"github.com/olegsu/cli-generator/configs/templates"
+	"github.com/olegsu/cli-generator/pkg/engine"
 	"github.com/olegsu/cli-generator/pkg/logger"
 	"github.com/olegsu/cli-generator/pkg/spec"
 	"github.com/spf13/viper"
@@ -20,6 +21,8 @@ type (
 		generateHandlers bool
 		runInitFlow      bool
 		spec             *spec.CLISpec
+		taskRunner       TaskRunner
+		goPackage        string
 	}
 )
 
@@ -90,6 +93,21 @@ func (g *golang) BuildData(cnf *viper.Viper) (string, map[string]interface{}) {
 		"package": cnf.GetString("goPackage"),
 	}
 	return "go", res
+}
+
+func (g *golang) PostInitFlow() []engine.Task {
+	return []engine.Task{
+		engine.Task{
+			Path: "go",
+			Args: []string{"mod", "init", g.goPackage},
+			Name: "golang init mod",
+		},
+		engine.Task{
+			Path: "go",
+			Args: []string{"mod", "tidy"},
+			Name: "golang install deps",
+		},
+	}
 }
 
 func (g *golang) renderFile(name string, tmpl string, data interface{}) *RenderResult {

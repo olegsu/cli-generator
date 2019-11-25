@@ -17,6 +17,7 @@ var generateCmdOptions struct {
 	projectDir string
 	createHandlers bool
 	runInitFlow bool
+	runPostInitFlow bool
 	
 }
 
@@ -43,6 +44,8 @@ var generateCmd = &cobra.Command{
 		
 		cnf.Set("runInitFlow", generateCmdOptions.runInitFlow)
 		
+		cnf.Set("runPostInitFlow", generateCmdOptions.runPostInitFlow)
+		
 	},
 }
 
@@ -63,5 +66,7 @@ func init() {
 	generateCmd.PersistentFlags().BoolVar(&generateCmdOptions.createHandlers, "create-handlers", cnf.GetBool("createHandlers"), "")
 
 	generateCmd.PersistentFlags().BoolVar(&generateCmdOptions.runInitFlow, "run-init-flow", cnf.GetBool("runInitFlow"), "")
+
+	generateCmd.PersistentFlags().BoolVar(&generateCmdOptions.runPostInitFlow, "run-post-init-flow", cnf.GetBool("runPostInitFlow"), "")
 	rootCmd.AddCommand(generateCmd)
 }

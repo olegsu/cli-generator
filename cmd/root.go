@@ -7,6 +7,7 @@ import (
 	
 	"github.com/spf13/viper"
 	"fmt"
+	"os"
 	
 	"github.com/spf13/cobra"
 )
@@ -19,7 +20,7 @@ var rootCmdOptions struct {
 
 var rootCmd = &cobra.Command{
 	Use:     "cli-generator",
-	Version: "0.17.0",
+	Version: "0.18.0",
 	Long: "Generate CLI entrypoints from spec file",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		
@@ -35,6 +36,7 @@ func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
 		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 }
 
