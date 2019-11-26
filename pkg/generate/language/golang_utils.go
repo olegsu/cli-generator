@@ -59,6 +59,8 @@ func golangRulesToArgsValidation(rule string) string {
 		return "cobra.MinimumNArgs(1)"
 	case spec.AtLeastTwo:
 		return "cobra.MinimumNArgs(2)"
+	case spec.ExactlyOne:
+		return "cobra.ExactArgs(1)"
 	}
 	return res
 }

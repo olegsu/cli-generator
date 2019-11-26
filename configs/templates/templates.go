@@ -283,7 +283,8 @@ templatesMap["spec.json"] = `{
                         "enum": [
                             "any",
                             "atLeastOne",
-                            "atLeastTwo"
+                            "atLeastTwo",
+                            "exactlyOne"
                         ]
                     },
                     "default": [

@@ -64,6 +64,7 @@ const (
 	Any        Rule = "any"
 	AtLeastOne Rule = "atLeastOne"
 	AtLeastTwo Rule = "atLeastTwo"
+	ExactlyOne Rule = "exactlyOne"
 )
 
 type Type string
