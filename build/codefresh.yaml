@@ -26,15 +26,6 @@ steps:
         only:
         - master
 
-  relase:
-    image: goreleaser/goreleaser
-    fail_fast: false
-    commands:
-    - goreleaser release -f ./build/goreleaser.yaml --rm-dist --skip-validate
-    when:
-      branch:
-        only:
-        - master
 
   docker_build:
     title: Building Docker Image
