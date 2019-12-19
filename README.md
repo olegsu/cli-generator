@@ -5,6 +5,9 @@
 Generate CLI entrypoints from spec file
 Any feedback on the spec is welcome
 
+## Install 
+`go get -u github.com/olegsu/cli-generator`
+
 ## Run Example
 * `git clone git@github.com:olegsu/cli-generator.git`
 * `cd cli-generator`
