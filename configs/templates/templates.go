@@ -99,7 +99,11 @@ func init() {
 	cnf.BindEnv("{{ .name }}", "{{ .envVar }}")
 	{{- end }}
 	{{- if ( has . "default" ) }}
+	{{ if .type eq strgin }}
+	cnf.SetDefault("{{ strings.CamelCase .name}}", {{ .default | qoute }})
+	{{ else }}
 	cnf.SetDefault("{{ strings.CamelCase .name}}", {{ .default }})
+	{{ end }}
 	{{- end }}
 
 	{{ $description := "" }}
