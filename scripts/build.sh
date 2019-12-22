@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+echo "Generating CLI"
+cli-generator generate --project-dir . --language go --spec ./build/cli-generator.yaml  --go-package github.com/olegsu/cli-generator
+
 echo "Generating template map from template files"
 go generate ${PWD}/scripts/generate.go
 echo "All files geneated"
