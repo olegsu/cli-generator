@@ -132,7 +132,14 @@ func (g *golang) renderCommands(root spec.Command, templateMap map[string]string
 			"cmd": cmdJSON,
 		}
 		mergo.Merge(&cmdData, data)
-		result = append(result, g.renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), templateMap[templateCmd], cmdData))
+		var finalname string
+		if root.Name == "root" {
+			finalname = fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name)
+		} else {
+			finalname = fmt.Sprintf("%s/cmd/%s_%s.go", g.projectDirectory, root.Name, name)
+
+		}
+		result = append(result, g.renderFile(finalname, templateMap[templateCmd], cmdData))
 		res, err := g.renderCommands(cmd, templateMap, data)
 		if err != nil {
 			return nil, err
