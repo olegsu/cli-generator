@@ -29,7 +29,6 @@ type (
 const (
 	templateMain     = "go.main.tmpl"
 	templateCmd      = "go.cmd.tmpl"
-	templateHandler  = "go.handler.tmpl"
 	templateMakefile = "go.makefile.tmpl"
 )
 
@@ -134,9 +133,6 @@ func (g *golang) renderCommands(root spec.Command, templateMap map[string]string
 		}
 		mergo.Merge(&cmdData, data)
 		result = append(result, g.renderFile(fmt.Sprintf("%s/cmd/%s.go", g.projectDirectory, name), templateMap[templateCmd], cmdData))
-		if g.generateHandlers {
-			result = append(result, g.renderFile(fmt.Sprintf("%s/pkg/%s/handler.go", g.projectDirectory, name), templateMap[templateHandler], cmdData))
-		}
 		res, err := g.renderCommands(cmd, templateMap, data)
 		if err != nil {
 			return nil, err

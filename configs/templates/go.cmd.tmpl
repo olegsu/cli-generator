@@ -6,13 +6,9 @@ package cmd
 import (
 	{{ if .cmd.root }}
 	"github.com/spf13/viper"
-	"fmt"
 	"os"
 	{{ end }}
-
-	{{- if not .cmd.loose }}
-	handler "{{ .go.package }}/pkg/{{$name}}"
-	{{end}}
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
@@ -51,8 +47,7 @@ var {{$name}}Cmd = &cobra.Command{
 	{{- end }}
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		h := &handler.Handler{}
-		return h.Handle(cnf)
+		return exec{{$name}}()
 	},
 	{{- end }}
 	{{- if .spec.metadata.description }}
@@ -91,8 +86,8 @@ func init() {
 	cnf.BindEnv("{{ .name }}", "{{ .envVar }}")
 	{{- end }}
 	{{- if ( has . "default" ) }}
-	{{ if .type eq strgin }}
-	cnf.SetDefault("{{ strings.CamelCase .name}}", {{ .default | qoute }})
+	{{ if eq .type "string" }}
+	cnf.SetDefault("{{ strings.CamelCase .name}}", {{ .default | quote }})
 	{{ else }}
 	cnf.SetDefault("{{ strings.CamelCase .name}}", {{ .default }})
 	{{ end }}
@@ -123,3 +118,9 @@ func init() {
 	{{ .cmd.parent }}Cmd.AddCommand({{$name}}Cmd)
 {{- end }}
 }
+{{ if not .cmd.root }}
+func exec{{$name}}() error {
+	fmt.Println("Hello World")
+	return nil
+}
+{{ end }}

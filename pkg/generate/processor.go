@@ -26,7 +26,10 @@ func (p *processor) Process(data []*language.RenderResult) error {
 		if err = os.MkdirAll(dirPath, os.ModePerm); err != nil {
 			return err
 		}
-
+		if fileExists(r.File) {
+			p.log.Debug("File already exists", "dir", dirPath, "file", filePath)
+			continue
+		}
 		if file, err = os.Create(r.File); err != nil {
 			return err
 		}
@@ -45,4 +48,12 @@ func write(content *bytes.Buffer, writer io.Writer) error {
 		return err
 	}
 	return nil
+}
+
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
