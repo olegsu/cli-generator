@@ -24,11 +24,15 @@ import (
 var cnf *viper.Viper = viper.New()
 {{- end }}
 
-var {{$name}}CmdOptions struct {
+type (
+	{{$name}}CmdOptions struct {
 	{{ range .cmd.flags }}
 	{{- .name | strings.CamelCase }} {{ .type | toGolangType }}
-	{{ end }}
-}
+	{{ end }}		
+	}
+)
+
+var {{$name}}Options {{$name}}CmdOptions
 
 var {{$name}}Cmd = &cobra.Command{
 	{{- if .cmd.root }}
@@ -55,7 +59,7 @@ var {{$name}}Cmd = &cobra.Command{
 	{{- end }}
 
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return exec{{$name}}()
+		return exec{{$name}}({{$name}}Options)
 	},
 	{{- end }}
 	{{- if .spec.metadata.description }}
@@ -71,7 +75,7 @@ var {{$name}}Cmd = &cobra.Command{
 		{{ .cmd.parent }}Cmd.PreRun(cmd, args)
 		{{- end }}
 		{{ range .cmd.flags }}
-		cnf.Set("{{- .name | strings.CamelCase }}", {{$name}}CmdOptions.{{- .name | strings.CamelCase }})
+		cnf.Set("{{- .name | strings.CamelCase }}", {{$name}}Options.{{- .name | strings.CamelCase }})
 		{{ end }}
 	},
 }
@@ -118,7 +122,7 @@ func init() {
 		{{- $description = (printf "%s [$%s]" $description .envVar ) -}}
 	{{- end -}}
 	
-	{{ $name }}Cmd.PersistentFlags().{{ .type | golangFlagFunc }}(&{{ $name }}CmdOptions.{{- .name | strings.CamelCase }}, "{{- .name }}", cnf.{{ golangFlagDefaultFunc .type }}("{{ strings.CamelCase .name}}"), "{{ $description }}")
+	{{ $name }}Cmd.PersistentFlags().{{ .type | golangFlagFunc }}(&{{ $name }}Options.{{- .name | strings.CamelCase }}, "{{- .name }}", cnf.{{ golangFlagDefaultFunc .type }}("{{ strings.CamelCase .name}}"), "{{ $description }}")
 	
 {{- end }}
 
@@ -127,8 +131,9 @@ func init() {
 {{- end }}
 }
 {{ if not .cmd.root }}
-func exec{{$name}}() error {
-	fmt.Println("Hello World")
+func exec{{$name}}(options {{$name}}CmdOptions) error {
+	fmt.Println("Running cmd: {{ .cmd.name }}")
+	fmt.Printf("{{$name}}CmdOptions: %v\n", options)
 	return nil
 }
 {{ end }}` 
