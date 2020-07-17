@@ -37,8 +37,9 @@ type Command struct {
 	Flags    []Flag    `json:"flags,omitempty"`
 	Loose    *bool     `json:"loose,omitempty"`
 	Name     string    `json:"name"`
-	Parent   *string   `json:"parent,omitempty"` // Applicative property, user data will be ignored
-	Root     bool      `json:"root"`             // Applicative property, user data will be ignored
+	Parent   string    `json:"parent"`  // Applicative property, user data will be ignored
+	Parents  []string  `json:"parents"` // Applicative property, user data will be ignored
+	Root     bool      `json:"root"`    // Applicative property, user data will be ignored
 }
 
 type Flag struct {

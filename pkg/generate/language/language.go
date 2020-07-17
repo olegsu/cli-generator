@@ -13,6 +13,7 @@ type (
 	TemplateEngine interface {
 		Render(data interface{}) ([]*RenderResult, error)
 		BuildData(cnf *viper.Viper) (string, map[string]interface{})
+		PreInitFlow() []engine.Task
 		PostInitFlow() []engine.Task
 	}
 

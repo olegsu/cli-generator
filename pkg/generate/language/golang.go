@@ -46,25 +46,21 @@ func (g *golang) Render(data interface{}) ([]*RenderResult, error) {
 	rootCmd := spec.Command{
 		Flags:    g.spec.Flags,
 		Name:     r,
-		Parent:   &r,
+		Parents:  []string{},
 		Root:     true,
 		Loose:    rootLoose,
 		Commands: []spec.Command{},
 	}
+	rootCmd.Parent = aggregateCmdFullName(r)
 	for _, cmd := range g.spec.Commands {
 		rootCmd.Commands = append(rootCmd.Commands, cmd)
-	}
-
-	rootJSON, err := spec.ToJSON(rootCmd)
-	if err != nil {
-		return nil, err
 	}
 	var result []*RenderResult
 	{
 		result = append(result, g.renderFile(fmt.Sprintf("%s/main.go", g.projectDirectory), tmap[templateMain], data))
 
 		rootData := map[string]interface{}{
-			"cmd": rootJSON,
+			"Cmd": rootCmd,
 		}
 		mergo.Merge(&rootData, data)
 
@@ -96,15 +92,25 @@ func (g *golang) BuildData(cnf *viper.Viper) (string, map[string]interface{}) {
 
 func (g *golang) PostInitFlow() []engine.Task {
 	return []engine.Task{
-		engine.Task{
-			Path: "go",
-			Args: []string{"mod", "init", g.goPackage},
-			Name: "golang init mod",
+		{
+			Path: "gofmt",
+			Args: []string{"-l", "-w", "."},
+			Name: "run gofmt",
 		},
-		engine.Task{
+		{
 			Path: "go",
 			Args: []string{"mod", "tidy"},
 			Name: "golang install deps",
+		},
+	}
+}
+
+func (g *golang) PreInitFlow() []engine.Task {
+	return []engine.Task{
+		{
+			Path: "go",
+			Args: []string{"mod", "init", g.goPackage},
+			Name: "golang init mod",
 		},
 	}
 }
@@ -123,13 +129,10 @@ func (g *golang) renderCommands(root spec.Command, templateMap map[string]string
 	result := []*RenderResult{}
 	for _, cmd := range root.Commands {
 		name := strcase.ToLowerCamel(cmd.Name)
-		cmd.Parent = &root.Name
-		cmdJSON, err := spec.ToJSON(cmd)
-		if err != nil {
-			return nil, err
-		}
+		cmd.Parents = append(append([]string{}, root.Parents...), root.Name)
+		cmd.Parent = aggregateCmdFullName(cmd.Parents...)
 		cmdData := map[string]interface{}{
-			"cmd": cmdJSON,
+			"Cmd": cmd,
 		}
 		mergo.Merge(&cmdData, data)
 		var finalname string

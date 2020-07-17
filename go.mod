@@ -18,7 +18,7 @@ require (
 	github.com/hairyhenderson/toml v0.3.0 // indirect
 	github.com/hashicorp/consul/api v1.2.0 // indirect
 	github.com/hashicorp/vault/api v1.0.4 // indirect
-	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
+	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
 	github.com/imdario/mergo v0.3.7
 	github.com/inconshreveable/log15 v0.0.0-20180818164646-67afb5ed74ec
 	github.com/joho/godotenv v1.3.0 // indirect

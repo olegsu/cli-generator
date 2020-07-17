@@ -27,13 +27,8 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 
 	var err error
 	var s *spec.CLISpec
-	var specJSON map[string]interface{}
 
 	if s, err = spec.GetCliSpec(cnf.GetString("spec"), ioutil.ReadFile); err != nil {
-		return err
-	}
-
-	if specJSON, err = spec.ToJSON(s); err != nil {
 		return err
 	}
 
@@ -56,18 +51,14 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 
 	var res []*language.RenderResult
 	if res, renderError = e.Render(map[string]interface{}{
-		"spec": specJSON,
+		"Spec": s,
 		key:    store,
 	}); renderError != nil {
 		log.Error(renderError.Error())
 	}
 
-	err = processor.Process(res)
-	if err != nil {
-		return err
-	}
-	if cnf.GetBool("runPostInitFlow") {
-		for _, t := range e.PostInitFlow() {
+	if cnf.GetBool("runInitFlow") {
+		for _, t := range e.PreInitFlow() {
 			log.Debug("Running task", "task", t)
 			err := taskRunner.Run(t)
 			if err != nil {
@@ -76,6 +67,21 @@ func handle(cnf *viper.Viper, log logger.Logger, processor resultRenderProcessor
 			}
 		}
 	}
+
+	err = processor.Process(res)
+	if err != nil {
+		return err
+	}
+
+	for _, t := range e.PostInitFlow() {
+		log.Debug("Running task", "task", t)
+		err := taskRunner.Run(t)
+		if err != nil {
+			log.Error("Failed to run task", "task", t.Name, "error", err.Error())
+			return err
+		}
+	}
+
 	return nil
 
 }

@@ -1,4 +1,4 @@
-outfile = {{.spec.metadata.name}}
+outfile = {{.Spec.Metadata.Name}}
 build:
 	@echo "Building go binary"
 	@go build -o $(outfile) *.go
