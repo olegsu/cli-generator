@@ -4,7 +4,6 @@ go 1.12
 
 require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
-	github.com/Pallinder/go-randomdata v1.2.0 // indirect
 	github.com/Shopify/ejson v1.2.1 // indirect
 	github.com/aws/aws-sdk-go v1.25.0 // indirect
 	github.com/boltdb/bolt v1.3.1 // indirect
@@ -30,7 +29,7 @@ require (
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.4.0
 	github.com/zealic/xignore v0.3.3 // indirect
-	golang.org/x/sys v0.0.0-20191001151750-bb3f8db39f24 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	gopkg.in/hairyhenderson/yaml.v2 v2.0.0-00010101000000-000000000000 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 	k8s.io/client-go v8.0.0+incompatible // indirect
